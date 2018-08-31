@@ -1,22 +1,16 @@
 const mongoose = require("mongoose");
 
+const Cat = require("./cat-model.js");
+
 // connect to the database described by this CONNECTION STRING
 // (domain, credentials, database name and all the info about the database)
 mongoose.connect("mongodb://localhost/catflix");
 
 
-// the variable "Cat" is our Mongoose model object
-// the "Cat" model will allow us to work with the "cats" collection
-// ("Cat" -> "cat" -> "cats")
-const Cat = mongoose.model("Cat", {
-  catName: String,
-  age: Number
-});
-
 
 // Creating new cats (insert a new document in the database)
 // -----------------------------------------------------------------------------
-Cat.create({ catName: "Tipi", age: 11 })
+Cat.create({ catName: "Tipi", age: 11, color: "red", toys: [ "mice" ] })
   .then(catDoc => {
     console.log("Tipi create SUCCESS!!", catDoc);
   })
@@ -24,7 +18,7 @@ Cat.create({ catName: "Tipi", age: 11 })
     console.log("Tipi create FAILURE!! 💩", err);
   });
 
-const lucaCat = new Cat({ catName: "Microbe", age: 4 });
+const lucaCat = new Cat({ catName: "Microbe", age: 4, color: "white" });
 lucaCat.save()
   .then(catDoc => console.log("Microbe save SUCCESS!!", catDoc))
   .catch(err => console.log("Microbe save FAILURE!! 💩", err));
@@ -87,6 +81,17 @@ Cat.updateMany(
 })
 .catch(err => {
   console.log("Cat.updateMany() FAILURE!! 💩", err);
+});
+
+Cat.findByIdAndUpdate(
+  "5b88115b51745448dcd868aa",    // 1st argument -> WHICH DOCUMENT(S)?
+  { $push: { toys: "plants" } }, // 2nd argument -> HOW WILL THEY CHANGE?
+)                                // (update operators: $set, $push, $inc)
+.then(catDoc => {
+  console.log(`Cat $push WORKED ${catDoc._id}`);
+})
+.catch(err => {
+  console.log("Cat $push FAILURE!! 💩", err);
 });
 
 
